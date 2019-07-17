@@ -6,6 +6,7 @@
 	"support": {
 		"source": "https://gitlab.com/artica-frame-work/artica-core"
 	},
+	"prefer-stable" : true,
 	"authors": [
 		{
 			"name": "Amin Keshavarz",
@@ -22,6 +23,5 @@
 	},
 	"autoload-dev": {
 		"psr-4": {"aminkt\\test": "test"}
-	},
-	"minimum-stability": "dev"
+	}
 }
