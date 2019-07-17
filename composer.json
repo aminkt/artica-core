@@ -22,5 +22,6 @@
 	},
 	"autoload-dev": {
 		"psr-4": {"aminkt\\test": "test"}
-	}
+	},
+	"minimum-stability": "dev"
 }
