@@ -15,7 +15,7 @@
 	"require": {
         "php": "~7.3.6",
         "ext-json": "*",
-        "yiisoft/yii2": "~2.0.23",
+        "yiisoft/yii2": "~2.0.23"
 	},
 	"autoload": {
 		"psr-4": {"artica\\": "src"}
