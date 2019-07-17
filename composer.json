@@ -1,0 +1,26 @@
+{
+	"name": "artica/core",
+	"description": "Core of artica framework base on yii2",
+  	"keywords": ["yii2", "artica"],
+	"type": "yii2-extension",
+	"support": {
+		"source": "https://gitlab.com/artica-frame-work/artica-core"
+	},
+	"authors": [
+		{
+			"name": "Amin Keshavarz",
+			"email": "ak_1596@yahoo.com"
+		}
+	],
+	"require": {
+        "php": "~7.3.6",
+        "ext-json": "*",
+        "yiisoft/yii2": "~2.0.23",
+	},
+	"autoload": {
+		"psr-4": {"artica\\": "src"}
+	},
+	"autoload-dev": {
+		"psr-4": {"aminkt\\test": "test"}
+	}
+}
