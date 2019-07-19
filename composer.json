@@ -16,12 +16,15 @@
 	"require": {
         "php": "~7.3.6",
         "ext-json": "*",
-        "yiisoft/yii2": "~2.0.23"
+        "yiisoft/yii2": "~2.0.23",
+		"yiisoft/yii2-bootstrap": "~2.0.0",
+		"yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
+		"vlucas/phpdotenv": "^3.3"
 	},
 	"autoload": {
-		"psr-4": {"artica\\": "src"}
+		"psr-4": {"Artica\\": "src"}
 	},
 	"autoload-dev": {
-		"psr-4": {"aminkt\\test": "test"}
+		"psr-4": {"Artica\\Test": "test"}
 	}
 }
