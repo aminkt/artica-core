@@ -1,6 +1,6 @@
 <?php
 
-namespace Artica\Lib\Composer;
+namespace Artica\Composer;
 
 use yii\composer\Installer as YiiInstaller;
 
