@@ -25,6 +25,6 @@
 		"psr-4": {"Artica\\": "src"}
 	},
 	"autoload-dev": {
-		"psr-4": {"Artica\\Test": "test"}
+		"psr-4": {"Artica\\Test\\": "test"}
 	}
 }
