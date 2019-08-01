@@ -58,8 +58,11 @@ trait MigrationTrait
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
      */
-    public function string(int $length = 191): ColumnSchemaBuilder
+    public function string($length = null)
     {
+        if ($length === null) {
+            $length = 191;
+        }
         return parent::string($length);
     }
 }

@@ -64,6 +64,7 @@ class Installer extends YiiInstaller
 
         Installer::initApp($configs['app_config_file']);
         Installer::initDb($configs['db_config_file']);
+        Installer::initTestDb($configs['db_test_config_file']);
         Installer::initRedis();
         Installer::initElasticSearch();
     }
@@ -97,6 +98,21 @@ return [
 ";
         file_put_contents($configFile, $content);
         echo "   Database configuration finished.\n";
+    }
+
+    private static function initTestDb(string $configFile): void
+    {
+        $dsn = getenv('DB_CONNECTION') . ':host=' . getenv('DB_HOST') . ';dbname=' . getenv('DB_TEST_DATABASE');
+        $content = "
+<?php
+\$db = require dirname(__DIR__) . '/db.php';
+// test database! Important not to run tests on production or development databases
+\$db['dsn'] = '".$dsn."';
+
+return \$db;
+";
+        file_put_contents($configFile, $content);
+        echo "   Database test configuration finished.\n";
     }
 
     private static function initRedis()

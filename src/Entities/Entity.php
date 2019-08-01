@@ -3,6 +3,8 @@
 
 namespace Artica\Entities;
 
+use Artica\Entities\Queries\EntityQuery;
+use Yii;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
 
@@ -18,6 +20,8 @@ use yii\db\StaleObjectException;
 abstract class Entity extends ActiveRecord
 {
     public $softDeleteFieldName = 'is_deleted';
+
+    protected static $queryClass = null;
 
     /**
      * Deletes the table row corresponding to this active record.
@@ -142,5 +146,17 @@ abstract class Entity extends ActiveRecord
         }
 
         throw new \RuntimeException("Not implemented");
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return \HangApp\Entities\Queries\EntityQuery|object
+     * @throws \yii\base\InvalidConfigException
+     */
+    public static function find()
+    {
+        $queryClass = static::$queryClass ? static::$queryClass : EntityQuery::class;
+
+        return Yii::createObject($queryClass, [get_called_class()]);
     }
 }
