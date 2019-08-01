@@ -1,9 +1,11 @@
 <?php
 
-namespace aminkt\yii2\oauth2\jwt;
+namespace Artica\Lib\Identity;
 
+use BadMethodCallException;
 use yii\base\InvalidArgumentException;
 use Firebase\JWT\JWT;
+use yii\web\IdentityInterface;
 
 trait UserIdentity
 {
@@ -19,23 +21,27 @@ trait UserIdentity
      * Null should be returned if such an identity cannot be found
      * or the identity is not in an active state (disabled, deleted, etc.)
      */
-    public static function findIdentityByAccessToken($token, $type = null)
+    public static function findIdentityByAccessToken($token, $type = null): ?IdentityInterface
     {
         if ($type == 'yii\filters\auth\HttpBearerAuth') {
             $payload = (array)JWT::decode($token, self::getEncryptKey(), [self::getEncryptAlgorithm()]);
             $id = $payload['data']->userId;
             return self::findOne($id);
         }
+
+        return null;
     }
+
     /**
      * Return algorithm that to use encrypt and decypt token.
      *
      * @return string
      */
-    protected static function getEncryptAlgorithm()
+    protected static function getEncryptAlgorithm(): string
     {
         return 'HS256';
     }
+
     /**
      * Return an encrypt key to use in encode and decode JWT token.
      * This token should be unique in both decode and encode processes.
@@ -44,18 +50,25 @@ trait UserIdentity
      *
      * @throws \BadMethodCallException  This methdo should implement in calss that implemented IdentityInterface.
      */
-    protected static function getEncryptKey()
+    protected static function getEncryptKey(): string
     {
-        throw new \BadMethodCallException("Please implement getEncryptKey() in " . static::class . '.');
+        throw new BadMethodCallException("Please implement getEncryptKey() in " . static::class . '.');
     }
+
     /**
-     * Genereate a new JWT token.
+     * Generate a new JWT token.
+     *
+     * @param array|null $payload
+     *
+     * @return string
+     * @throws \yii\base\InvalidConfigException
      */
-    public function generateToken($payload = null)
+    public function generateToken(?array $payload = null): string
     {
         if (!$payload) {
             $payload = $this->payloadCreator();
         }
+
         if (!isset($payload['iat']) or
             !isset($payload['data']) or
             !isset($payload['data']['userId'])) {
@@ -64,12 +77,15 @@ trait UserIdentity
         $token = JWT::encode($payload, self::getEncryptKey(), self::getEncryptAlgorithm());
         return $token;
     }
+
     /**
      * Create a payload for JWT token.
      *
      * @return array    Payload array.
+     *
+     * @throws \yii\base\InvalidConfigException
      */
-    public function payloadCreator()
+    public function payloadCreator(): array
     {
         $payload = [
             'iat' => time(),         // Issued at: time when the token was generated
@@ -81,8 +97,10 @@ trait UserIdentity
                 'userId' => $this->getId()
             ]
         ];
+
         return $payload;
     }
+
     /**
      * Returns a key that can be used to check the validity of a given identity ID.
      *
@@ -101,6 +119,7 @@ trait UserIdentity
     {
         return '';
     }
+
     /**
      * Validates the given auth key.
      *
@@ -115,5 +134,19 @@ trait UserIdentity
     public function validateAuthKey($authKey)
     {
         return false;
+    }
+
+    /**
+     * Finds an identity by the given ID.
+     *
+     * @param string|int $id the ID to be looked for
+     *
+     * @return IdentityInterface|null the identity object that matches the given ID.
+     * Null should be returned if such an identity cannot be found
+     * or the identity is not in an active state (disabled, deleted, etc.)
+     */
+    public static function findIdentity($id)
+    {
+        return self::findOne($id);
     }
 }

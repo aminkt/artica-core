@@ -2,6 +2,7 @@
 
 namespace Artica\Composer;
 
+use Dotenv\Dotenv;
 use yii\composer\Installer as YiiInstaller;
 
 /**
@@ -59,7 +60,7 @@ class Installer extends YiiInstaller
         $configs = func_get_args();
         $configs = $configs[0];
 
-        $dotenv = \Dotenv\Dotenv::create(dirname(Installer::$vendorDirectory));
+        $dotenv = Dotenv::create(dirname(Installer::$vendorDirectory));
         $dotenv->load();
 
         Installer::initApp($configs['app_config_file']);
@@ -72,6 +73,11 @@ class Installer extends YiiInstaller
     private static function initApp(string $configFile): void
     {
         Installer::changeFrameworkConfig($configFile, 'language', getenv('APP_LANGUAGE'));
+
+        $length = 32;
+        $bytes = openssl_random_pseudo_bytes($length);
+        $key = strtr(substr(base64_encode($bytes), 0, $length), '+/=', '_-.');
+        Installer::changeFrameworkConfig('config/api/params.php', 'tokenEncryptKey', $key);
         echo "   Application configuration finished.\n";
     }
 
