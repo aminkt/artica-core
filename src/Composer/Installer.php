@@ -63,6 +63,7 @@ class Installer extends YiiInstaller
         $dotenv = Dotenv::create(dirname(Installer::$vendorDirectory));
         $dotenv->load();
 
+        Installer::fixProjectAutoloader();
         Installer::initApp($configs['app_config_file']);
         Installer::initDb($configs['db_config_file']);
         Installer::initTestDb($configs['db_test_config_file']);
