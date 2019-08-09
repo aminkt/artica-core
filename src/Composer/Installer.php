@@ -59,8 +59,9 @@ class Installer extends YiiInstaller
     {
         $configs = func_get_args();
         $configs = $configs[0];
-        $serviceClassNames = $configs['service_initializer_classes'] ?? [];
+        $serviceClassNames = $configs['service_initializers'] ?? [];
         foreach ($serviceClassNames as $serviceClassName) {
+            echo ">> Run {$serviceClassName}\n";
             new $serviceClassName();
         }
     }
