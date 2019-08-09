@@ -70,10 +70,24 @@ class Installer extends YiiInstaller
         Installer::initElasticSearch();
     }
 
+    private static function fixProjectAutoloader()
+    {
+        $files = [
+            'web/index.php',
+            'web/index-test.php',
+            'console/yii',
+            'console/yii-test',
+        ];
+
+        foreach ($files as $file) {
+            $content = str_replace('vendorDirectory', self::$vendorDirectory, file_get_contents($file));
+            file_put_contents($file, $content);
+        }
+    }
+
     private static function initApp(string $configFile): void
     {
         Installer::changeFrameworkConfig($configFile, 'language', getenv('APP_LANGUAGE'));
-
         $length = 32;
         $bytes = openssl_random_pseudo_bytes($length);
         $key = strtr(substr(base64_encode($bytes), 0, $length), '+/=', '_-.');
