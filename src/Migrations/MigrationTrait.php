@@ -6,6 +6,7 @@ namespace Artica\Migrations;
 
 use InvalidArgumentException;
 use yii\db\ColumnSchemaBuilder;
+use yii\helpers\Inflector;
 
 /**
  * Trait EnumTrait
@@ -64,5 +65,73 @@ trait MigrationTrait
             $length = 191;
         }
         return parent::string($length);
+    }
+
+    /**
+     * Generate index name to use when you want create a new index.
+     *
+     * @param string $table
+     * @param array  $columns
+     * @param bool   $isPrimaryKey
+     *
+     * @return string
+     *
+     * @author Amin Keshavarz <ak_1596@yahoo.com>
+     */
+    protected function generateIndexName(string $table, array $columns, bool $isPrimaryKey = false)
+    {
+        $tableSection = str_replace(['{', '}', '%'], '', $table);
+        $tableSection = Inflector::camelize($tableSection);
+
+        $fieldSection = '';
+        foreach ($fields as $field){
+            $fieldSection .= Inflector::camelize($field) .'_';
+        }
+
+        if ($isPrimaryKey) {
+            return $tableSection . '_pk';
+        }
+
+        return $tableSection . '-' . $fieldSection . 'index';
+    }
+
+    /**
+     * Create a primary key and generate name.
+     *
+     * @param $table
+     * @param $columns
+     *
+     * @return void
+     *
+     * @author Amin Keshavarz <ak_1596@yahoo.com>
+     */
+    public function addNamedPrimaryKey($table, $columns): void
+    {
+        $this->addPrimaryKey(
+            $this->generateIndexName($table, is_array($columns) ? $columns : [$columns], true),
+            $table,
+            $columns
+        );
+    }
+
+    /**
+     * Create an Index and generate it's name.
+     *
+     * @param      $table
+     * @param      $columns
+     * @param bool $unique
+     *
+     * @return void
+     *
+     * @author Amin Keshavarz <ak_1596@yahoo.com>
+     */
+    public function createNamedIndex($table, $columns, $unique = false): void
+    {
+        $this->createIndex(
+            $this->generateIndexName($table, is_array($columns) ? $columns : [$columns], false),
+            $table,
+            $columns,
+            $unique
+        );
     }
 }
