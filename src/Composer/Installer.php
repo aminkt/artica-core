@@ -14,7 +14,7 @@ use yii\composer\Installer as YiiInstaller;
  */
 class Installer extends YiiInstaller
 {
-    static $vendorDirectory;
+    public static $vendorDirectory;
 
     /**
      * Special method to run tasks defined in `[extra][yii\composer\Installer::postCreateProject]` key in `composer.json`
@@ -62,6 +62,7 @@ class Installer extends YiiInstaller
         $serviceClassNames = $configs['service_initializers'] ?? [];
         foreach ($serviceClassNames as $serviceClassName) {
             echo ">> Run {$serviceClassName}\n";
+            echo "------------------------------------------------------\n";
             new $serviceClassName();
         }
     }

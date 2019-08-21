@@ -64,7 +64,7 @@ abstract class AbstractAppInitializer
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    public abstract function getProjectPath();
+    abstract public function getProjectPath();
 
     /**
      * Init application.
@@ -73,7 +73,7 @@ abstract class AbstractAppInitializer
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    public abstract function initApplication();
+    abstract public function initApplication();
 
     /**
      * Get relative path of files in project and return full path based on project location.
@@ -147,15 +147,15 @@ abstract class AbstractAppInitializer
      */
     protected function printMessage(string $message, ?string $foregroundColor = null, ?string $backgroundColor = null): void
     {
-        $colored_string = "";
+        $colored_string = '';
 
         // Check if given foreground color found
         if (isset($this->foreground_colors[$foregroundColor])) {
-            $colored_string .= "\033[" . $this->_foregroundColors[$foregroundColor] . "m";
+            $colored_string .= "\033[{$this->_foregroundColors[$foregroundColor]}m";
         }
         // Check if given background color found
         if (isset($this->background_colors[$backgroundColor])) {
-            $colored_string .= "\033[" . $this->_backgroundColors[$backgroundColor] . "m";
+            $colored_string .= "\033[{$this->_foregroundColors[$backgroundColor]}m";
         }
 
         // Add string and end coloring
