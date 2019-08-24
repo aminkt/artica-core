@@ -3,6 +3,8 @@
 
 namespace Artica\Composer;
 
+use Dotenv\Dotenv;
+
 /**
  * Class AbstractAppInitializer
  * Base class for project initializers.
@@ -32,6 +34,8 @@ abstract class AbstractAppInitializer
 
     public function __construct()
     {
+        $dotenv = Dotenv::create(dirname($this->getVendorPath()));
+        $dotenv->load();
         $this->initApplication();
     }
 
@@ -162,5 +166,29 @@ abstract class AbstractAppInitializer
         $colored_string .=  $message . "\033[0m";
 
         echo $colored_string;
+    }
+
+    /**
+     * Return env variable from .env file.
+     *
+     * @param string $key
+     * @param string $defaultPrefix
+     * @param mixed   $defaultValue
+     *
+     * @return mixed
+     *
+     * @author Amin Keshavarz <ak_1596@yahoo.com>
+     */
+    protected function getEnvVar($key, $defaultPrefix = '', $defaultValue = null)
+    {
+        $defaultKey = $defaultPrefix . $key;
+
+        if ($val = getenv($key)) {
+            return $val;
+        } elseif ($val = getenv($defaultKey)) {
+            return $val;
+        }
+
+        return $defaultValue;
     }
 }
