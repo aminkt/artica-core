@@ -99,14 +99,23 @@ abstract class AbstractAppInitializer
      * @param string $file
      * @param string $key
      * @param string $val
+     * @param bool   $changeIfNotExist
      *
      * @return void
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    public static function changeFrameworkConfig(string $file, string $key, string $val): void
+    public static function changeFrameworkConfig(string $file, string $key, ?string $val, bool $changeIfNotExist = false): void
     {
-        $content = preg_replace('/([\'"]' . $key . '[\'"]\s*=>\s*)([\'"].*[\'|"])/', "\\1'$val'", file_get_contents($file));
+        if ($val === null) {
+            return;
+        }
+
+        if ($changeIfNotExist) {
+            $content = preg_replace('/([\'"]' . $key . '[\'"]\s*=>\s*)([\'"][\'|"])/', "\\1'$val'", file_get_contents($file));
+        } else {
+            $content = preg_replace('/([\'"]' . $key . '[\'"]\s*=>\s*)([\'"].*[\'|"])/', "\\1'$val'", file_get_contents($file));
+        }
         file_put_contents($file, $content);
     }
 

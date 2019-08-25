@@ -3,7 +3,6 @@
 
 namespace Artica\Migrations;
 
-
 use InvalidArgumentException;
 use yii\db\ColumnSchemaBuilder;
 use yii\helpers\Inflector;
@@ -33,16 +32,16 @@ trait MigrationTrait
     public function enum(array $params, string $default = null): string
     {
         if (!is_array($params) or count($params) == 0) {
-            throw new InvalidArgumentException("Params should be array.");
+            throw new InvalidArgumentException('Params should be array.');
         }
-        $sql = "ENUM(";
+        $sql = 'ENUM(';
         for ($i = 0; $i < count($params); $i++) {
             if ($i != 0) {
-                $sql .= ", ";
+                $sql .= ', ';
             }
             $sql .= "'{$params[$i]}'";
         }
-        $sql .= ")";
+        $sql .= ')';
 
         if ($default) {
             $sql .= " NOT NULL DEFAULT '{$default}'";
@@ -84,8 +83,8 @@ trait MigrationTrait
         $tableSection = Inflector::camelize($tableSection);
 
         $fieldSection = '';
-        foreach ($fields as $field){
-            $fieldSection .= Inflector::camelize($field) .'_';
+        foreach ($columns as $field) {
+            $fieldSection .= Inflector::camelize($field) . '_';
         }
 
         if ($isPrimaryKey) {

@@ -4,6 +4,9 @@
 namespace Artica\Entities;
 
 use Artica\Entities\Queries\EntityQuery;
+use Exception;
+use RuntimeException;
+use Throwable;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
@@ -62,10 +65,10 @@ abstract class Entity extends ActiveRecord
             }
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             throw $e;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $transaction->rollBack();
             throw $e;
         }
@@ -145,12 +148,12 @@ abstract class Entity extends ActiveRecord
             return $this->id;
         }
 
-        throw new \RuntimeException("Not implemented");
+        throw new RuntimeException('Not implemented');
     }
 
     /**
      * {@inheritdoc}
-     * @return \HangApp\Entities\Queries\EntityQuery|object
+     * @return \Artica\Entities\Queries\EntityQuery|object
      * @throws \yii\base\InvalidConfigException
      */
     public static function find()
