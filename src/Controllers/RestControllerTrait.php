@@ -1,9 +1,12 @@
 <?php
+declare(strict_types=1);
 
 
 namespace Artica\Controllers;
 
 use aminkt\yii2\rest\utils\HttpCode;
+use InvalidArgumentException;
+use Yii;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\ContentNegotiator;
 use yii\web\Response;
@@ -46,7 +49,7 @@ trait RestControllerTrait
         ];
 
         if (in_array($code, $invalidResponseCodes)) {
-            throw new \InvalidArgumentException("Status code should be an error status code. use success method instead.");
+            throw new InvalidArgumentException('Status code should be an error status code. use success method instead.');
         }
 
         return static::message($message, $code);
@@ -62,7 +65,7 @@ trait RestControllerTrait
      */
     public static function message($message, $code)
     {
-        \Yii::$app->response->setStatusCode($code);
+        Yii::$app->response->setStatusCode($code);
         return $message;
     }
 
@@ -77,7 +80,7 @@ trait RestControllerTrait
     public function success($message, $code = HttpCode::OK)
     {
         if ($code >= 400) {
-            throw new \InvalidArgumentException("Status code should be a success status code. use error method instead.");
+            throw new InvalidArgumentException('Status code should be a success status code. use error method instead.');
         }
         return static::message($message, $code);
     }
@@ -99,9 +102,15 @@ trait RestControllerTrait
     }
 
     /**
-     * @inheritdoc
+     * Config negotiator behavior config.
+     *
+     * @param $behaviors
+     *
+     * @return array
+     *
+     * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    protected function addContentNegotiatorBehavior($behaviors)
+    protected function addContentNegotiatorBehavior($behaviors): array
     {
         $behaviors['contentNegotiator'] = [
             'class' => ContentNegotiator::class,
@@ -113,9 +122,15 @@ trait RestControllerTrait
     }
 
     /**
-     * @inheritdoc
+     * Add auth behavior configs.
+     *
+     * @param $behaviors
+     *
+     * @return array
+     *
+     * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    protected function addAuthBehavior($behaviors)
+    protected function addAuthBehavior($behaviors): array
     {
         unset($behaviors['authenticator']);
 
@@ -175,14 +190,14 @@ trait RestControllerTrait
     public function beforeAction($action)
     {
         $cors = $this->prepareCors();
-        \Yii::$app->getResponse()->getHeaders()->set("Access-Control-Allow-Origin", $cors['origin']);
-        \Yii::$app->getResponse()->getHeaders()->set("Access-Control-Allow-Methods", $cors['method']);
-        \Yii::$app->getResponse()->getHeaders()->set("Access-Control-Allow-Headers", $cors['headers']);
-        \Yii::$app->getResponse()->getHeaders()->set("Access-Control-Allow-Credentials", "true");
-        \Yii::$app->getResponse()->getHeaders()->set("Allow", $cors['method']);
+        Yii::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', $cors['origin']);
+        Yii::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Methods', $cors['method']);
+        Yii::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', $cors['headers']);
+        Yii::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Credentials', 'true');
+        Yii::$app->getResponse()->getHeaders()->set('Allow', $cors['method']);
 
-        if (\Yii::$app->getRequest()->isOptions) {
-            \Yii::$app->end();
+        if (Yii::$app->getRequest()->isOptions) {
+            Yii::$app->end();
         }
 
         return parent::beforeAction($action);
@@ -195,17 +210,17 @@ trait RestControllerTrait
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    private function prepareCors()
+    private function prepareCors(): array
     {
-        $origin = \Yii::$app->getRequest()->getHeaders()->get('origin');
-        $method = \Yii::$app->getRequest()->getHeaders()->get("Access-Control-Request-Method");
-        $headers = \Yii::$app->getRequest()->getHeaders()->get("Access-Control-Request-Headers");
+        $origin = Yii::$app->getRequest()->getHeaders()->get('origin');
+        $method = Yii::$app->getRequest()->getHeaders()->get('Access-Control-Request-Method');
+        $headers = Yii::$app->getRequest()->getHeaders()->get('Access-Control-Request-Headers');
         $headers = array_unique(array_merge($headers ? explode(',', $headers) : [], $this->getExtraCorsHeaders()));
         $headers = implode(',', $headers);
         return [
             'origin' => $origin,
             'method' => $method,
-            "headers" => $headers
+            'headers' => $headers
         ];
     }
 

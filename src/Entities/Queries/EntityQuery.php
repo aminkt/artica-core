@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Artica\Entities\Queries;
 
@@ -7,9 +8,9 @@ use yii\db\ActiveQuery;
 /**
  * This is the ActiveQuery class for [[\HangApp\Entities\EventEntity]].
  *
- * @see \HangApp\Entities\EventEntity
+ * @see \Artica\Entities\Entity
  */
-abstract class EntityQuery extends ActiveQuery
+class EntityQuery extends ActiveQuery
 {
     /**
      * Return not deleted rows.
@@ -27,7 +28,7 @@ abstract class EntityQuery extends ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return \HangApp\Entities\EventEntity[]|array
+     * @return \Artica\Entities\Entity[]
      */
     public function all($db = null)
     {
@@ -36,7 +37,7 @@ abstract class EntityQuery extends ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return \HangApp\Entities\EventEntity|array|null
+     * @return \Artica\Entities\Entity[]|null
      */
     public function one($db = null)
     {
