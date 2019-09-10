@@ -13,7 +13,7 @@ use yii\base\Model;
  * @package Artica\Forms
  *
  */
-class BaseForm extends Model
+abstract class BaseForm extends Model
 {
 
 }

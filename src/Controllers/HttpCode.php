@@ -1,6 +1,6 @@
 <?php
 
-namespace aminkt\yii2\rest\utils;
+namespace Artica\Controllers;
 
 /**
  * Class containing constants of HTTP Status Codes
