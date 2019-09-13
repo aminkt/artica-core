@@ -5,6 +5,8 @@ namespace Artica\Forms;
 
 use Artica\Entities\Entity;
 use BadMethodCallException;
+use yii\base\Model;
+use yii\db\StaleObjectException;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -121,10 +123,10 @@ abstract class CrudForm extends BaseForm
     /**
      * Create operation of crud form.
      *
-     * @return \Artica\Entities\Entity|null
+     * @return Entity|null
      *
-     * @author Amin Keshavarz <ak_1596@yahoo.com>
      * @throws \BadMethodCallException Throw when can't load entity object.
+     *@author Amin Keshavarz <ak_1596@yahoo.com>
      */
     public function create(): ?Entity
     {
@@ -144,7 +146,7 @@ abstract class CrudForm extends BaseForm
         }
 
         if (!$entity->save()) {
-            $this->handleEntityErrors($entity);
+            $this->handleErrors($entity);
         }
 
         return $entity;
@@ -155,11 +157,11 @@ abstract class CrudForm extends BaseForm
      *
      * @param mixed $id Id of entity.
      *
-     * @return \Artica\Entities\Entity|null
+     * @return Entity|null
      *
+     * @throws NotFoundHttpException Throw when can't find entity.
+     * @throws StaleObjectException
      * @author Amin Keshavarz <ak_1596@yahoo.com>
-     * @throws \BadMethodCallException Throw when can't load entity object.
-     * @throws \yii\web\NotFoundHttpException Throw when can't find entity.
      */
     public function update($id): ?Entity
     {
@@ -177,7 +179,7 @@ abstract class CrudForm extends BaseForm
         }
 
         if (!$entity->update()) {
-            $this->handleEntityErrors($entity);
+            $this->handleErrors($entity);
         }
 
         return $entity;
@@ -211,12 +213,12 @@ abstract class CrudForm extends BaseForm
      *
      * @param $id
      *
-     * @return \Artica\Entities\Entity
+     * @return Entity
      *
-     * @author Amin Keshavarz <ak_1596@yahoo.com>
-     * @throws \yii\web\NotFoundHttpException Throw when can't find entity.
+     * @throws NotFoundHttpException Throw when can't find entity.
+     *@author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    private function loadEntityById($id): Entity
+    protected function loadEntityById($id): Entity
     {
         /** @var Entity $entityClass */
         $entityClass = $this->getEntityClass();
@@ -246,15 +248,15 @@ abstract class CrudForm extends BaseForm
     /**
      * Handle entity errors when try to save or update or delete an entity.
      *
-     * @param \Artica\Entities\Entity $entity
+     * @param Model $model
      *
      * @return void
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    protected function handleEntityErrors(Entity $entity): void
+    protected function handleErrors(Model $model): void
     {
-        foreach ($entity->getErrors() as $attribute => $error) {
+        foreach ($model->getErrors() as $attribute => $error) {
             if (is_array($error)) {
                 foreach ($error as $errorMessage) {
                     $this->addError($attribute, $errorMessage);
