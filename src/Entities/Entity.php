@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 
 namespace Artica\Entities;
@@ -8,6 +9,7 @@ use Exception;
 use RuntimeException;
 use Throwable;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
 
@@ -153,13 +155,23 @@ abstract class Entity extends ActiveRecord
 
     /**
      * {@inheritdoc}
-     * @return \Artica\Entities\Queries\EntityQuery|object
-     * @throws \yii\base\InvalidConfigException
+     * @return EntityQuery|object
+     * @throws InvalidConfigException
      */
-    public static function find()
+    public static function find(): EntityQuery
     {
         $queryClass = static::$queryClass ? static::$queryClass : EntityQuery::class;
 
         return Yii::createObject($queryClass, [get_called_class()]);
+    }
+
+    /**
+     * Return cache indexes array. contain configurations too.
+     *
+     * @return array
+     */
+    public static function getCacheIndexes(): array
+    {
+        return [];
     }
 }
