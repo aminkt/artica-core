@@ -24,6 +24,8 @@ use yii\db\StaleObjectException;
  */
 abstract class Entity extends ActiveRecord
 {
+    public const ROWS_IN_CACHED_PAGE = 1000;
+
     public $softDeleteFieldName = 'is_deleted';
 
     protected static $queryClass = null;

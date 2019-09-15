@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Artica\Entities\Queries;
 
 use Artica\Entities\Entity;
+use Artica\Entities\EntityCacheIndex;
 use Artica\Exceptions\EntityException;
 use Artica\Services;
 use yii\db\ActiveQuery;
@@ -69,13 +70,13 @@ class EntityQuery extends ActiveQuery
      * that provided from cache.
      *
      * @param string $indexCode
-     * @param array $conditions
+     * @param array $dynamicFieldValues Dynamic fields values sort by index definition.
      *
      * @return EntityQuery
      */
-    public function byCacheIndex(string $indexCode, array $conditions): EntityQuery
+    public function byCacheIndex(string $indexCode, array $dynamicFieldValues): EntityQuery
     {
-        $ids = $this->getIdsFromCache($indexCode, $conditions);
+        $ids = $this->getIdsFromCache($indexCode, $dynamicFieldValues);
 
         $this->where([
             'id' => $ids
@@ -88,15 +89,13 @@ class EntityQuery extends ActiveQuery
      * Return list of ids from cache by given cache code and conditions.
      *
      * @param string $indexCode
-     * @param array $conditions
+     * @param array $dynamicValues
      *
      * @return array
      */
-    private function getIdsFromCache(string $indexCode, array $conditions): array
+    private function getIdsFromCache(string $indexCode, array $dynamicValues): array
     {
-        $getIdsCallable = function () use ($indexCode, $conditions) : string {
-            $ids = [];
-
+        $getIdsCallable = function () use ($indexCode, $dynamicValues) : string {
             /** @var Entity $entityClass */
             $entityClass = $this->modelClass;
             $indexItems = $entityClass::getCacheIndexes();
@@ -104,16 +103,21 @@ class EntityQuery extends ActiveQuery
                 throw new EntityException('Cache index code is not valid.');
             }
 
+            $query = (new Query())
+                ->select(['id'])
+                ->from($entityClass::tableName());
+
+            /** @var EntityCacheIndex $indexItem */
             $indexItem = $indexItems[$indexCode];
+            $query = $indexItem->generateWhereCondition($query, $dynamicValues);
 
-            $query = new Query();
-            $query
-                ->select(['id']);
+            if ($indexItem->isUnique()) {
+                $res = $query->one();
+            } else {
+                $res = $query->all();
+            }
 
-            $ids = $entityClass::getDb()->queryBuilder->buildSelect()
-
-
-            return  implode(',', $ids);
+            return  implode(array_column($res, 'id'), ',');
         };
 
         $ids = $this->serviceRedisCache()->getOrSet(
