@@ -9,7 +9,7 @@ use yii\db\Exception;
  * Class EntityException
  * @package Artica\Exceptions
  */
-class EntityException extends Exception
+class EntityNotFoundException extends Exception
 {
 
 }

@@ -23,9 +23,6 @@ abstract class CrudForm extends BaseForm
     const SCENARIO_UPDATE = 'update';
     const SCENARIO_DELETE = 'delete';
 
-    /** @var null|string $formName Form name. If null use class name to generate form name. */
-    protected $formName = null;
-
     /**
      * @inheritDoc
      */

@@ -1,14 +1,13 @@
 <?php
-declare(strict_types=1);
-
 
 namespace Artica\Controllers;
 
-use aminkt\yii2\rest\utils\HttpCode;
 use InvalidArgumentException;
 use Yii;
+use yii\base\ExitException;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\ContentNegotiator;
+use yii\web\BadRequestHttpException;
 use yii\web\Response;
 
 /**
@@ -34,12 +33,12 @@ trait RestControllerTrait
     /**
      * Create an error for api response.
      *
-     * @param array|string $message
+     * @param array $message
      * @param int          $code
      *
      * @return array
      */
-    public function error($message, $code = 400)
+    public function error(array $message, int $code = 400): array
     {
         $invalidResponseCodes = [
             HttpCode::OK,
@@ -52,18 +51,18 @@ trait RestControllerTrait
             throw new InvalidArgumentException('Status code should be an error status code. use success method instead.');
         }
 
-        return static::message($message, $code);
+        return static::message(['errors' => $message], $code);
     }
 
     /**
      * Create an message for api response.
      *
-     * @param array|string $message
+     * @param array $message
      * @param int          $code
      *
      * @return array
      */
-    public static function message($message, $code)
+    public static function message(array $message, int $code): array
     {
         Yii::$app->response->setStatusCode($code);
         return $message;
@@ -72,12 +71,12 @@ trait RestControllerTrait
     /**
      * Create an success message for api response.
      *
-     * @param array|string $message
+     * @param array $message
      * @param int          $code
      *
      * @return array
      */
-    public function success($message, $code = HttpCode::OK)
+    public function success(array $message, int $code = HttpCode::OK): array
     {
         if ($code >= 400) {
             throw new InvalidArgumentException('Status code should be a success status code. use error method instead.');
@@ -88,7 +87,7 @@ trait RestControllerTrait
     /**
      * @inheritdoc
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         $behaviors = parent::behaviors();
         $behaviors = $this->addContentNegotiatorBehavior($behaviors);
@@ -183,11 +182,11 @@ trait RestControllerTrait
      *
      * @return bool
      *
-     * @throws \yii\base\ExitException
-     * @throws \yii\web\BadRequestHttpException
+     * @throws ExitException
+     * @throws BadRequestHttpException
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         $cors = $this->prepareCors();
         Yii::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', $cors['origin']);
