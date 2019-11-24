@@ -26,7 +26,7 @@ abstract class Entity extends ActiveRecord
 {
     public const ROWS_IN_CACHED_PAGE = 1000;
 
-    public $softDeleteFieldName = 'is_deleted';
+    protected $softDeleteFieldName = 'is_deleted';
 
     protected static $queryClass = null;
 
@@ -101,7 +101,7 @@ abstract class Entity extends ActiveRecord
         if ($lock !== null) {
             $condition[$lock] = $this->$lock;
         }
-        if ($force) {
+        if ($force or empty($this->softDeleteFieldName)) {
             $result = static::deleteAll($condition);
         } else {
             $result = static::updateAll([$this->softDeleteFieldName => true], $condition);

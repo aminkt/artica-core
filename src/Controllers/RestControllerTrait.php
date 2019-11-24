@@ -26,11 +26,6 @@ use yii\web\Response;
 trait RestControllerTrait
 {
     /**
-     * @var bool See details {@link \yii\web\Controller::$enableCsrfValidation}.
-     */
-    public $enableCsrfValidation = false;
-
-    /**
      * Create an error for api response.
      *
      * @param array $message
