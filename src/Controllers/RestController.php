@@ -23,4 +23,6 @@ use yii\rest\Controller;
 class RestController extends Controller
 {
     use RestControllerTrait;
+
+    public $serializer = Serializer::class;
 }
