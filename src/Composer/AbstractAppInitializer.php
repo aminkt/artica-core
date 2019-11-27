@@ -34,11 +34,12 @@ abstract class AbstractAppInitializer
 
     public function __construct()
     {
+        $envPaths = dirname($this->getVendorPath());
         $envFile = '.env';
-        if (YII_ENV_TEST) {
+        if (!file_exists($envPaths . DIRECTORY_SEPARATOR . $envFile)) {
             $envFile = '.env-test';
         }
-        $dotenv = Dotenv::create(dirname($this->getVendorPath()), $envFile);
+        $dotenv = Dotenv::create($envPaths, $envFile);
         $dotenv->load();
         $this->initApplication();
     }
