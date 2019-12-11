@@ -132,7 +132,6 @@ trait RestControllerTrait
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::class,
             'except' => ['options'],
-            'optional' => ['*']
         ];
 
         return $behaviors;
