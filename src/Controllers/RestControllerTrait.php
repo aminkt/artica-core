@@ -7,6 +7,7 @@ use Yii;
 use yii\base\ExitException;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\ContentNegotiator;
+use yii\helpers\Inflector;
 use yii\web\BadRequestHttpException;
 use yii\web\Response;
 
@@ -84,13 +85,9 @@ trait RestControllerTrait
      */
     public function behaviors(): array
     {
-        $behaviors = parent::behaviors();
-        $behaviors = $this->addContentNegotiatorBehavior($behaviors);
-        $behaviors = $this->addAuthBehavior($behaviors);
-
-        // re-add authentication filter
-        $behaviors['authenticator']['optional'] = $this->getOptionalAuthRoutes();
-        $behaviors['authenticator']['only'] = $this->getOnlyAuthRoutes();
+//        $behaviors = parent::behaviors();
+//        $behaviors = $this->addContentNegotiatorBehavior($behaviors);
+        $behaviors = $this->addAuthBehavior([]);
 
         return $behaviors;
     }
@@ -132,6 +129,8 @@ trait RestControllerTrait
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::class,
             'except' => ['options'],
+            'optional' => $this->getOptionalAuthRoutes(),
+            'only' => $this->getOnlyAuthRoutes(),
         ];
 
         return $behaviors;
@@ -148,6 +147,21 @@ trait RestControllerTrait
     {
         if (property_exists($this, 'optionalAuthRoutes')) {
             return $this->optionalAuthRoutes;
+        }
+
+        if (property_exists($this, 'onlyAuthRoutes')) {
+            if (!empty($this->onlyAuthRoutes)) {
+                $allControllerActions = [];
+                foreach (get_class_methods(static::class) as $method) {
+                    if ($method != 'actions' && preg_match('/action*/', $method, $matches)) {
+                        $method = str_replace('action', '', $method);
+                        $allControllerActions[] = Inflector::camel2id($method);
+                    }
+                }
+                $allControllerActions = array_merge($allControllerActions, array_keys($this->actions()));
+
+                return array_diff($allControllerActions, $this->onlyAuthRoutes);
+            }
         }
 
         return ['*'];
