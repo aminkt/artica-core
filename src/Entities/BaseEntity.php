@@ -29,7 +29,6 @@ abstract class BaseEntity extends ActiveRecord implements EntityInterface
     protected $softDeleteFieldName = 'is_deleted';
 
     protected static $queryClass = null;
-    protected static $entityViewClass = null;
 
     /**
      * Deletes the table row corresponding to this active record.
@@ -158,25 +157,5 @@ abstract class BaseEntity extends ActiveRecord implements EntityInterface
         $queryClass = static::$queryClass ? static::$queryClass : EntityQuery::class;
 
         return Yii::createObject($queryClass, [get_called_class()]);
-    }
-
-    /**
-     * Return entity prevention view class.
-     *
-     * @return EntityView|BaseEntity
-     * @throws ViewNotFoundException
-     */
-    public function getView()
-    {
-        if (static::$entityViewClass === null) {
-            return $this;
-        }
-
-        if (!class_exists(static::$entityViewClass)) {
-            throw new ViewNotFoundException();
-        }
-
-        $view = new static::$entityViewClass($this);
-        return $view;
     }
 }

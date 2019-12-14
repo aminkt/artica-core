@@ -76,14 +76,6 @@ interface EntityInterface extends ActiveRecordInterface
     public static function find(): EntityQuery;
 
     /**
-     * Return entity prevention view class.
-     *
-     * @return EntityView|BaseEntity
-     * @throws ViewNotFoundException
-     */
-    public function getView();
-
-    /**
      * Returns attribute values.
      * @param array $names list of attributes whose value needs to be returned.
      * Defaults to null, meaning all attributes listed in [[attributes()]] will be returned.
