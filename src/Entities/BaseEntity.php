@@ -6,6 +6,7 @@ namespace Artica\Entities;
 
 use Artica\ApiViews\EntityView;
 use Artica\Entities\Queries\EntityQuery;
+use Artica\Exceptions\Entity\EntityNotFoundException;
 use Artica\Exceptions\View\ViewNotFoundException;
 use Exception;
 use RuntimeException;
@@ -29,6 +30,108 @@ abstract class BaseEntity extends ActiveRecord implements EntityInterface
     protected $softDeleteFieldName = 'is_deleted';
 
     protected static $queryClass = null;
+
+    /** @var array Local cache of entities. */
+    protected static $cache = [];
+
+    /**
+     * Load entities by ids and cache them in local cache.
+     *
+     * @param array $ids entity ids.
+     * @param bool $throwException
+     *
+     * @return $this[]
+     * @throws EntityNotFoundException
+     */
+    protected static function loadByIds(array $ids, $throwException = false): array
+    {
+        $missingIds = [];
+        $results = [];
+
+        foreach ($ids as $id) {
+            if ($entity = self::getFromCache($id)) {
+                $results[$id] = $entity;
+            } else {
+                $missingIds[] = $id;
+            }
+        }
+
+        if (!empty($missingIds)) {
+            $entities = static::findAll(['id' => $missingIds]);
+            foreach ($entities as $entity) {
+                self::addToCache($entity);
+                $results[$entity->getId()] = $entity;
+            }
+        }
+
+        $availableIds = array_keys($results);
+        $notFoundIds = array_diff($ids, $availableIds);
+        if ($throwException and !empty($notFoundIds)) {
+            throw new EntityNotFoundException(get_called_class(), $notFoundIds);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get entities by ids.
+     *
+     * @param array $ids entity ids.n
+     *
+     * @return $this[]
+     * @throws EntityNotFoundException
+     */
+    public static function getByIds(array $ids): array
+    {
+        return self::loadByIds($ids, true);
+    }
+
+    /**
+     * Find an entity by id.
+     * @param int $id
+     * @return $this
+     * @throws EntityNotFoundException
+     */
+    public static function getById(int $id)
+    {
+        $results = self::getByIds([$id]);
+        return array_shift($results);
+    }
+
+    /**
+     * Return cache key for entity.
+     * @param int $id
+     * @return string
+     */
+    private static function getCacheKey(int $id): string
+    {
+        return get_called_class().':'.$id;
+    }
+
+    /**
+     * Retrieve entity from local cache or return null.
+     * @param int $id
+     * @return Entity|null
+     */
+    private static function getFromCache(int $id)
+    {
+        $key = self::getCacheKey($id);
+        if (isset(self::$cache[$key])) {
+            return self::$cache[$key];
+        }
+        return null;
+    }
+
+    /**
+     * Add entity to local cache.
+     *
+     * @param Entity $entity
+     */
+    private static function addToCache(Entity $entity): void
+    {
+        $key = self::getCacheKey($entity->getId());
+        self::$cache[$key] = $entity;
+    }
 
     /**
      * Deletes the table row corresponding to this active record.

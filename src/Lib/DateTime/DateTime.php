@@ -7,6 +7,7 @@ use DateTime as BaseDateTime;
 
 /**
  * Class DateTime
+ * Can be used as standard date time object.
  *
  * @author  Amin Keshavarz <ak_1596@yahoo.com>
  * @package Artica\Lib\DateTime

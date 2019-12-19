@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Artica\Entities;
 
 use Artica\Entities\Queries\EntityQuery;
+use Artica\Exceptions\Entity\EntityNotFoundException;
 use Exception;
 use RuntimeException;
 use Throwable;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\Expression;
 use yii\db\StaleObjectException;
 
 /**
@@ -24,4 +27,15 @@ use yii\db\StaleObjectException;
  */
 abstract class Entity extends BaseEntity
 {
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'created_time',
+                'updatedAtAttribute' => 'updated_time',
+                'value' => new Expression('NOW()'),
+            ],
+        ];
+    }
 }

@@ -88,10 +88,10 @@ trait MigrationTrait
         }
 
         if ($isPrimaryKey) {
-            return $tableSection . '_pk';
+            return $tableSection . '-pk';
         }
 
-        return $tableSection . '-' . $fieldSection . 'index';
+        return $tableSection . '-' . $fieldSection . '-index';
     }
 
     /**

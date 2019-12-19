@@ -6,6 +6,7 @@ namespace Artica\Entities;
 
 use Artica\ApiViews\EntityView;
 use Artica\Entities\Queries\EntityQuery;
+use Artica\Exceptions\Entity\EntityNotFoundException;
 use Artica\Exceptions\View\ViewNotFoundException;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveRecordInterface;
@@ -84,4 +85,22 @@ interface EntityInterface extends ActiveRecordInterface
      * @return array attribute values (name => value).
      */
     public function getAttributes($names = null, $except = []);
+
+    /**
+     * Get entities by ids.
+     *
+     * @param array $ids entity ids.n
+     *
+     * @return $this[]
+     * @throws EntityNotFoundException
+     */
+    public static function getByIds(array $ids): array;
+
+    /**
+     * Find an entity by id.
+     * @param int $id
+     * @return $this
+     * @throws EntityNotFoundException
+     */
+    public static function getById(int $id);
 }

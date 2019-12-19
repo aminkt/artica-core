@@ -20,7 +20,7 @@ trait Services
     /**
      * @return Security
      */
-    public function serviceSecurity(): Security
+    public static function serviceSecurity(): Security
     {
         return Yii::$app->getSecurity();
     }
@@ -28,7 +28,7 @@ trait Services
     /**
      * @return CacheInterface
      */
-    public function serviceCache(): CacheInterface
+    public static function serviceCache(): CacheInterface
     {
         return Yii::$app->getCache();
     }
@@ -36,7 +36,7 @@ trait Services
     /**
      * @return Cache
      */
-    public function serviceRedisCache(): Cache
+    public static function serviceRedisCache(): Cache
     {
         return Yii::$app->get('redisCache');
     }
@@ -44,7 +44,7 @@ trait Services
     /**
      * @return Queue
      */
-    public function serviceRabbitMQ(): Queue
+    public static function serviceRabbitMQ(): Queue
     {
         return Yii::$app->get('amqQueue');
     }
@@ -52,7 +52,7 @@ trait Services
     /**
      * @return MailerInterface
      */
-    public function serviceEmail(): MailerInterface
+    public static function serviceEmail(): MailerInterface
     {
         return Yii::$app->getMailer();
     }
@@ -60,7 +60,7 @@ trait Services
     /**
      * @return SMSInterface
      */
-    public function serviceSMS(): SMSInterface
+    public static function serviceSMS(): SMSInterface
     {
         return Yii::$app->get('sms');
     }
