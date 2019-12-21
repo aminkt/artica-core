@@ -4,10 +4,13 @@ declare(strict_types=1);
 namespace Artica\Forms;
 
 use Artica\Entities\Entity;
+use Artica\Exceptions\Entity\EntityNotFoundException;
+use Artica\Exceptions\Entity\EntityValidationException;
 use BadMethodCallException;
 use yii\base\Model;
 use yii\db\StaleObjectException;
 use yii\web\NotFoundHttpException;
+use yii\web\ServerErrorHttpException;
 
 /**
  * Class CrudForm
@@ -16,6 +19,8 @@ use yii\web\NotFoundHttpException;
  * @author  Amin Keshavarz <ak_1596@yahoo.com>
  * @package Artica\Forms
  *
+ *
+ * @property-read  null|string $entityClass
  */
 abstract class CrudForm extends BaseForm
 {
@@ -57,17 +62,17 @@ abstract class CrudForm extends BaseForm
     {
         $rules = [];
 
-        foreach ($this->getCreateRules() as $rule) {
+        foreach ($this->createRules() as $rule) {
             $rule['on'] = self::SCENARIO_CREATE;
             $rules[] = $rule;
         }
 
-        foreach ($this->getUpdateRules() as $rule) {
+        foreach ($this->updateRules() as $rule) {
             $rule['on'] = self::SCENARIO_UPDATE;
             $rules[] = $rule;
         }
 
-        foreach ($this->getDeleteRules() as $rule) {
+        foreach ($this->deleteRules() as $rule) {
             $rule['on'] = self::SCENARIO_DELETE;
             $rules[] = $rule;
         }
@@ -84,7 +89,7 @@ abstract class CrudForm extends BaseForm
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    abstract protected function getCreateRules(): array;
+    abstract protected function createRules(): array;
 
     /**
      * Return create scenario rules.
@@ -95,7 +100,10 @@ abstract class CrudForm extends BaseForm
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    abstract protected function getUpdateRules(): array;
+    protected function updateRules(): array
+    {
+        return $this->createRules();
+    }
 
     /**
      * Return create scenario rules.
@@ -106,7 +114,10 @@ abstract class CrudForm extends BaseForm
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    abstract protected function getDeleteRules(): array;
+    protected function deleteRules(): array
+    {
+        return [];
+    }
 
     /**
      * Return related entity class name.
@@ -115,15 +126,16 @@ abstract class CrudForm extends BaseForm
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    abstract protected function getEntityClass(): string;
+    abstract public function getEntityClass(): string;
 
     /**
      * Create operation of crud form.
      *
      * @return Entity|null
      *
-     * @throws \BadMethodCallException Throw when can't load entity object.
-     *@author Amin Keshavarz <ak_1596@yahoo.com>
+     * @throws EntityValidationException When can't save entity.
+     * @throws ServerErrorHttpException When can't save entity.
+     * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
     public function create(): ?Entity
     {
@@ -134,12 +146,13 @@ abstract class CrudForm extends BaseForm
         }
 
         /** @var Entity $entity */
-        $entity = new ($this->getEntityClass())();
+        $class = $this->getEntityClass();
+        $entity = new $class();
 
         $attributes = $this->entityAttributesMapper();
 
         if (!$entity->load($attributes, '')) {
-            throw new BadMethodCallException('Can\'t load entity object.');
+            throw new BadMethodCallException('Can\'t load entity '. $this->getEntityClass());
         }
 
         if (!$entity->save()) {
@@ -157,7 +170,8 @@ abstract class CrudForm extends BaseForm
      * @return Entity|null
      *
      * @throws NotFoundHttpException Throw when can't find entity.
-     * @throws StaleObjectException
+     * @throws EntityValidationException When can't save entity.
+     * @throws ServerErrorHttpException When can't save entity.
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
     public function update($id): ?Entity
@@ -172,7 +186,7 @@ abstract class CrudForm extends BaseForm
 
         $attributes = $this->entityAttributesMapper();
         if (!$entity->load($attributes, '')) {
-            throw new BadMethodCallException('Can\'t load entity object.');
+            throw new BadMethodCallException('Can\'t load entity '. $this->getEntityClass());
         }
 
         if (!$entity->update()) {
@@ -190,6 +204,7 @@ abstract class CrudForm extends BaseForm
      *
      * @return bool
      *
+     * @throws NotFoundHttpException
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
     public function delete($id): bool
@@ -213,16 +228,19 @@ abstract class CrudForm extends BaseForm
      * @return Entity
      *
      * @throws NotFoundHttpException Throw when can't find entity.
-     *@author Amin Keshavarz <ak_1596@yahoo.com>
+     * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
     protected function loadEntityById($id): Entity
     {
         /** @var Entity $entityClass */
         $entityClass = $this->getEntityClass();
-        $entity = $entityClass::findOne($id);
-        if (!$entity) {
-            throw new NotFoundHttpException('Can\'t find entity');
+
+        try {
+            $entity = $entityClass::getById($id);
+        } catch (EntityNotFoundException $exception) {
+            throw new NotFoundHttpException($exception->getMessage());
         }
+
         return $entity;
     }
 
@@ -245,22 +263,20 @@ abstract class CrudForm extends BaseForm
     /**
      * Handle entity errors when try to save or update or delete an entity.
      *
-     * @param Model $model
+     * @param Entity $entity
      *
      * @return void
      *
+     * @throws EntityValidationException
+     * @throws ServerErrorHttpException
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    protected function handleErrors(Model $model): void
+    protected function handleErrors(Entity $entity): void
     {
-        foreach ($model->getErrors() as $attribute => $error) {
-            if (is_array($error)) {
-                foreach ($error as $errorMessage) {
-                    $this->addError($attribute, $errorMessage);
-                }
-            } else {
-                $this->addError($attribute, $error);
-            }
+        if ($entity->hasErrors()) {
+            throw new EntityValidationException($entity);
         }
+
+        throw new ServerErrorHttpException('Can not save entity');
     }
 }

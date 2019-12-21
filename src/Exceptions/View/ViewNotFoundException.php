@@ -6,7 +6,7 @@ namespace Artica\Exceptions\View;
  * Class ViewNotFoundException
  * @package Artica\Exceptions
  */
-class ViewNotFoundException extends \RuntimeException
+class ViewNotFoundException extends ViewException
 {
 
 }

@@ -1,13 +1,14 @@
 <?php
-declare(strict_types=1);
 
 namespace Artica\Controllers;
 
+use Artica\ApiViews\CrudApiView;
 use Artica\Entities\Entity;
+use Artica\Exceptions\Entity\EntityNotFoundException;
 use Artica\Forms\CrudForm;
 use Yii;
-use yii\rest\Controller;
 use yii\web\BadRequestHttpException;
+use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 
 /**
@@ -16,9 +17,10 @@ use yii\web\ServerErrorHttpException;
  * @author  Amin Keshavarz <ak_1596@yahoo.com>
  * @package Artica\Controllers
  *
- * @property CrudForm $crudForm
+ * @property-read  string $apiViewClass
+ * @property-read  CrudForm $crudForm
  */
-abstract class CrudController extends Controller
+abstract class CrudController extends RestController
 {
     /**
      * Return Crud form object.
@@ -27,16 +29,34 @@ abstract class CrudController extends Controller
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    abstract protected function getCrudForm(): CrudForm;
+    abstract protected function getCrudForm();
+
+    /**
+     * Return Crud Api view class name.
+     * @return string
+     */
+    abstract protected function getApiViewClass(): string;
 
     /**
      * View an item using id.
      *
      * @param mixed $id Item id.
+     *
+     * @return CrudApiView
      */
     public function actionView($id)
     {
+        /** @var Entity $entityClass */
+        $entityClass = $this->getCrudForm()->getEntityClass();
 
+        try {
+            $entity = $entityClass::getById($id);
+        } catch (EntityNotFoundException $e) {
+            throw new NotFoundHttpException();
+        }
+
+        $apiViewClass = $this->getApiViewClass();
+        return new $apiViewClass($entity);
     }
 
     /**
@@ -44,29 +64,33 @@ abstract class CrudController extends Controller
      */
     public function actionIndex()
     {
-
+        throw new ServerErrorHttpException('Not Implemented yet!');
     }
 
     /**
-     * Create a new item using crudform.
+     * Create a new item using CrudForm.
+     *
+     * @return CrudForm|CrudApiView
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
     public function actionCreate()
     {
         $form = $this->getCrudForm();
+        $form->setScenario($form::SCENARIO_CREATE);
 
-        if (!$form->load(Yii::$app->getRequest()->post(), $form->formName())) {
+        if (!$form->load(Yii::$app->getRequest()->post())) {
             throw new BadRequestHttpException('Can\'t load form.');
         }
 
         $entity = $form->create();
 
         if ($form->hasErrors()) {
-            return $form->getErrorSummary(true);
+            return $form;
         }
 
-        return $entity;
+        $apiViewClass = $this->getApiViewClass();
+        return new $apiViewClass($entity);
     }
 
     /**
@@ -74,46 +98,49 @@ abstract class CrudController extends Controller
      *
      * @param mixed $id Entity id.
      *
-     * @return array|Entity|null
+     * @return CrudForm|CrudApiView
      */
     public function actionUpdate($id)
     {
         $form = $this->getCrudForm();
+        $form->setScenario($form::SCENARIO_UPDATE);
 
-        if (!$form->load(Yii::$app->getRequest()->post(), $form->formName())) {
+        if (!$form->load(Yii::$app->getRequest()->post())) {
             throw new BadRequestHttpException('Can\'t load form.');
         }
 
         $entity = $form->update($id);
 
         if ($form->hasErrors()) {
-            return $form->getErrorSummary(true);
+            return $form;
         }
 
-        return $entity;
+        $apiViewClass = $this->getApiViewClass();
+        return new $apiViewClass($entity);
     }
 
     /**
      * Delete an item using Crud form.
      *
      * @param mixed $id Item id.
-     *
-     * @return array
+     * @return CrudForm|CrudApiView
      */
     public function actionDelete($id)
     {
         $form = $this->getCrudForm();
+        $form->setScenario($form::SCENARIO_DELETE);
 
-        if (!$form->load(Yii::$app->getRequest()->post(), $form->formName())) {
+        if (!$form->load(Yii::$app->getRequest()->post())) {
             throw new BadRequestHttpException('Can\'t load form.');
         }
 
         if ($form->delete($id)) {
-            return ['Item deleted'];
+            $apiViewClass = $this->getApiViewClass();
+            return new $apiViewClass();
         }
 
         if ($form->hasErrors()) {
-            return $form->getErrorSummary(true);
+            return $form;
         }
 
         throw new ServerErrorHttpException('Can\'t delete item for unknown reason.');
