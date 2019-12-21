@@ -32,8 +32,8 @@ abstract class Entity extends BaseEntity
         return [
             [
                 'class' => TimestampBehavior::class,
-                'createdAtAttribute' => 'created_time',
-                'updatedAtAttribute' => 'updated_time',
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
                 'value' => new Expression('NOW()'),
             ],
         ];
