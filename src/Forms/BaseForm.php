@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Artica\Forms;
 
-use yii\base\Model;
+use Artica\Models\BaseModel;
 
 /**
  * Class Form
@@ -12,7 +12,7 @@ use yii\base\Model;
  * @author  Amin Keshavarz <ak_1596@yahoo.com>
  * @package Artica\Forms
  */
-abstract class BaseForm extends Model
+abstract class BaseForm extends BaseModel
 {
     /** @var null|string $formName Form name. If null use class name to generate form name. */
     protected $formName = null;

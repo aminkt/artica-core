@@ -6,9 +6,8 @@ namespace Artica\Forms;
 use Artica\Entities\Entity;
 use Artica\Exceptions\Entity\EntityNotFoundException;
 use Artica\Exceptions\Entity\EntityValidationException;
+use Artica\Exceptions\Model\ValidationException;
 use BadMethodCallException;
-use yii\base\Model;
-use yii\db\StaleObjectException;
 use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 
@@ -133,17 +132,16 @@ abstract class CrudForm extends BaseForm
      *
      * @return Entity|null
      *
-     * @throws EntityValidationException When can't save entity.
+     * @throws EntityValidationException When there is validation error in entity.
+     * @throws ValidationException When there is validation error in current form.
      * @throws ServerErrorHttpException When can't save entity.
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    public function create(): ?Entity
+    public function create(): Entity
     {
         $this->setScenario(self::SCENARIO_CREATE);
 
-        if (!$this->validate()) {
-            return null;
-        }
+        $this->verifyNow();
 
         /** @var Entity $entity */
         $class = $this->getEntityClass();
@@ -170,17 +168,16 @@ abstract class CrudForm extends BaseForm
      * @return Entity|null
      *
      * @throws NotFoundHttpException Throw when can't find entity.
-     * @throws EntityValidationException When can't save entity.
+     * @throws EntityValidationException When there is validation error in entity.
+     * @throws ValidationException When there is validation error in current form.
      * @throws ServerErrorHttpException When can't save entity.
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
-    public function update($id): ?Entity
+    public function update($id): Entity
     {
         $this->setScenario(self::SCENARIO_UPDATE);
 
-        if (!$this->validate()) {
-            return null;
-        }
+        $this->verifyNow();
 
         $entity = $this->loadEntityById($id);
 
@@ -205,15 +202,14 @@ abstract class CrudForm extends BaseForm
      * @return bool
      *
      * @throws NotFoundHttpException
+     * @throws ValidationException When there is validation error in current form.
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */
     public function delete($id): bool
     {
         $this->setScenario(self::SCENARIO_DELETE);
 
-        if (!$this->validate()) {
-            return false;
-        }
+        $this->verifyNow();
 
         $entity =  $this->loadEntityById($id);
 

@@ -23,8 +23,8 @@ abstract class EntityBaseModel extends BaseModel
     /**
      * EntityBaseModel constructor.
      *
-     * @param \Artica\Entities\Entity|null $entity
-     * @param array                        $config
+     * @param Entity|null $entity
+     * @param array       $config
      */
     public function __construct(?Entity $entity, $config = [])
     {
@@ -35,7 +35,7 @@ abstract class EntityBaseModel extends BaseModel
     /**
      * Return related entity object.
      *
-     * @return \Artica\Entities\Entity|null
+     * @return Entity|null
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */

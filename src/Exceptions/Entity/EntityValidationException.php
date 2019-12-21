@@ -3,20 +3,27 @@
 namespace Artica\Exceptions\Entity;
 
 use Artica\Entities\Entity;
+use Artica\Exceptions\Model\ValidationExceptionInterface;
+use Artica\Exceptions\Model\ValidationExceptionTrait;
+use Artica\Models\BaseModel;
 
 /**
  * Class EntityException
  *
  * @package Artica\Exceptions
  */
-class EntityValidationException extends EntityException
+class EntityValidationException extends EntityException implements ValidationExceptionInterface
 {
+    use ValidationExceptionTrait;
+
     protected $entity;
 
     public function __construct(Entity $entity, $message = '', $errorInfo = [], $code = 0, \Exception $previous = null)
     {
-        parent::__construct($message, $errorInfo, $code, $previous);
         $this->entity = $entity;
+        $message .= $this->provideErrorMessage();
+        $errorInfo = array_merge($this->getErrors(), $errorInfo);
+        parent::__construct($message, $errorInfo, $code, $previous);
     }
 
     public function getName()
@@ -25,24 +32,12 @@ class EntityValidationException extends EntityException
     }
 
     /**
-     * Return entity errors.
+     * Return model class.
      *
-     * @param string|null $attribute
-     *
-     * @return array
+     * @return Entity|BaseModel|null
      */
-    public function getErrors(?string $attribute = null)
+    public function getModel()
     {
-        return $this->entity->getErrors($attribute);
-    }
-
-    public function __toString()
-    {
-        $message = parent::__toString();
-        if ($this->entity->hasErrors()) {
-            $message .= PHP_EOL . 'Validation Errors:' . PHP_EOL;
-            $message .= json_encode($this->entity->getErrors());
-        }
-        return $message;
+        return $this->entity;
     }
 }

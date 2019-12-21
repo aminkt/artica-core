@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Artica\Entities;
 
-use Artica\ApiViews\EntityView;
 use Artica\Entities\Queries\EntityQuery;
 use Artica\Exceptions\Entity\EntityNotFoundException;
-use Artica\Exceptions\View\ViewNotFoundException;
 use Exception;
 use RuntimeException;
 use Throwable;

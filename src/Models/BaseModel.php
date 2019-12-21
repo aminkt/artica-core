@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Artica\Models;
 
+use Artica\Exceptions\Model\ValidationException;
 use yii\base\Model;
 
 /**
@@ -16,5 +17,15 @@ use yii\base\Model;
  */
 abstract class BaseModel extends Model
 {
-
+    /**
+     * Throw validation exception if there is validation error.
+     *
+     * @throws ValidationException  When form has validation error for current scenario.
+     */
+    public function verifyNow(): void
+    {
+        if (!$this->validate()) {
+            throw new ValidationException($this);
+        }
+    }
 }

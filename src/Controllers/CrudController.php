@@ -5,6 +5,8 @@ namespace Artica\Controllers;
 use Artica\ApiViews\CrudApiView;
 use Artica\Entities\Entity;
 use Artica\Exceptions\Entity\EntityNotFoundException;
+use Artica\Exceptions\Entity\EntityValidationException;
+use Artica\Exceptions\Model\ValidationException;
 use Artica\Forms\CrudForm;
 use Yii;
 use yii\web\BadRequestHttpException;
@@ -83,9 +85,9 @@ abstract class CrudController extends RestController
             throw new BadRequestHttpException('Can\'t load form.');
         }
 
-        $entity = $form->create();
-
-        if ($form->hasErrors()) {
+        try {
+            $entity = $form->create();
+        } catch (ValidationException $e) {
             return $form;
         }
 
@@ -109,9 +111,9 @@ abstract class CrudController extends RestController
             throw new BadRequestHttpException('Can\'t load form.');
         }
 
-        $entity = $form->update($id);
-
-        if ($form->hasErrors()) {
+        try {
+            $entity = $form->u();
+        } catch (ValidationException $e) {
             return $form;
         }
 
@@ -134,12 +136,11 @@ abstract class CrudController extends RestController
             throw new BadRequestHttpException('Can\'t load form.');
         }
 
-        if ($form->delete($id)) {
+        try {
+            $form->create();
             $apiViewClass = $this->getApiViewClass();
             return new $apiViewClass();
-        }
-
-        if ($form->hasErrors()) {
+        } catch (ValidationException $e) {
             return $form;
         }
 

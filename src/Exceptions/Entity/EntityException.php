@@ -2,7 +2,6 @@
 
 namespace Artica\Exceptions\Entity;
 
-use Artica\Entities\Entity;
 use yii\db\Exception;
 
 /**
