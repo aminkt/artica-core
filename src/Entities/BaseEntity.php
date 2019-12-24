@@ -235,7 +235,7 @@ abstract class BaseEntity extends ActiveRecord implements EntityInterface
     /**
      * Return id of
      *
-     * @return mixed
+     * @return null|int
      *
      * @author Amin Keshavarz <ak_1596@yahoo.com>
      */

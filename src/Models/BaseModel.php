@@ -17,6 +17,8 @@ use yii\base\Model;
  */
 abstract class BaseModel extends Model
 {
+    public $throwExceptionOnValidationError = true;
+
     /**
      * Throw validation exception if there is validation error.
      *
@@ -26,6 +28,18 @@ abstract class BaseModel extends Model
     {
         if (!$this->validate()) {
             throw new ValidationException($this);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @throws ValidationException
+     */
+    public function afterValidate()
+    {
+        parent::afterValidate();
+        if ($this->throwExceptionOnValidationError) {
+            $this->verifyNow();
         }
     }
 }

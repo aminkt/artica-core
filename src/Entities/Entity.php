@@ -1,20 +1,11 @@
 <?php
-declare(strict_types=1);
-
 
 namespace Artica\Entities;
 
-use Artica\Entities\Queries\EntityQuery;
-use Artica\Exceptions\Entity\EntityNotFoundException;
-use Exception;
-use RuntimeException;
-use Throwable;
-use Yii;
-use yii\base\InvalidConfigException;
+use Artica\Exceptions\Entity\EntityException;
+use Artica\Exceptions\Entity\EntityValidationException;
 use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
 use yii\db\Expression;
-use yii\db\StaleObjectException;
 
 /**
  * Class Entity
@@ -37,5 +28,59 @@ abstract class Entity extends BaseEntity
                 'value' => new Expression('NOW()'),
             ],
         ];
+    }
+
+    /**
+     * @inheritDoc
+     * @throws EntityValidationException
+     */
+    public function afterValidate()
+    {
+        parent::afterValidate();
+        if ($this->hasErrors()) {
+            throw new EntityValidationException($this);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @throws EntityException  When can not save entity for unknown reason.
+     * @throws EntityValidationException When can not save entity because of validation error.
+     */
+    public function save($runValidation = true, $attributeNames = null)
+    {
+        $result = parent::save($runValidation, $attributeNames);
+        if (!$result) {
+            $this->handleEntityUpdateFails();
+        }
+        return $result;
+    }
+
+    /**
+     * @inheritDoc
+     * @throws EntityException  When can not save entity for unknown reason.
+     * @throws EntityValidationException When can not save entity because of validation error.
+     */
+    public function update($runValidation = true, $attributeNames = null)
+    {
+        $result = parent::update($runValidation, $attributeNames);
+        if (!$result) {
+            $this->handleEntityUpdateFails();
+        }
+        return $result;
+    }
+
+    /**
+     * Handle entity update fails.
+     * @throws EntityException
+     * @throws EntityValidationException
+     */
+    private function handleEntityUpdateFails()
+    {
+        if ($this->hasErrors()) {
+            throw new EntityValidationException($this);
+        } else {
+            throw new EntityException('Can not save entity '. get_called_class() .'.');
+        }
     }
 }
