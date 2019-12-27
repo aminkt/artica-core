@@ -85,9 +85,9 @@ trait RestControllerTrait
      */
     public function behaviors(): array
     {
-//        $behaviors = parent::behaviors();
-//        $behaviors = $this->addContentNegotiatorBehavior($behaviors);
-        $behaviors = $this->addAuthBehavior([]);
+        $behaviors = parent::behaviors();
+        $behaviors = $this->addContentNegotiatorBehavior($behaviors);
+        $behaviors = $this->addAuthBehavior($behaviors);
 
         return $behaviors;
     }
