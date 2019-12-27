@@ -17,11 +17,11 @@ use yii\base\Model;
  */
 abstract class BaseModel extends Model
 {
+    /** @var bool $throwExceptionOnValidationError Throw validation exception if there is validation error. */
     public $throwExceptionOnValidationError = true;
 
     /**
      * Throw validation exception if there is validation error.
-     *
      * @throws ValidationException  When form has validation error for current scenario.
      */
     public function verifyNow(): void
@@ -39,7 +39,7 @@ abstract class BaseModel extends Model
     {
         parent::afterValidate();
         if ($this->throwExceptionOnValidationError) {
-            $this->verifyNow();
+            throw new ValidationException($this);
         }
     }
 }
