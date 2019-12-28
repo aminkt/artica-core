@@ -7,6 +7,7 @@ use Artica\ApiView\ApiViewInterface;
 use yii\base\Arrayable;
 use yii\base\Model;
 use yii\data\DataProviderInterface;
+use yii\helpers\ArrayHelper;
 
 /**
  * Class Serializer
@@ -38,6 +39,27 @@ class Serializer extends \yii\rest\Serializer
         }
 
         return $data;
+    }
+
+    /**
+     * Serializes a set of models.
+     * @param array $models
+     * @return array the array representation of the models
+     */
+    protected function serializeModels(array $models)
+    {
+        list($fields, $expand) = $this->getRequestedFields();
+        foreach ($models as $i => $model) {
+            if ($model instanceof ApiViewInterface) {
+                $models[$i] = $model->toArray();
+            } elseif ($model instanceof Arrayable) {
+                $models[$i] = $model->toArray($fields, $expand);
+            } elseif (is_array($model)) {
+                $models[$i] = ArrayHelper::toArray($model);
+            }
+        }
+
+        return $models;
     }
 
     /**

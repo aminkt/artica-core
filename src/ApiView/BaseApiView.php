@@ -9,6 +9,9 @@ namespace Artica\ApiView;
  *
  * @package Artica\ApiView
  */
-abstract class BaseApiView extends BaseView
+abstract class BaseApiView implements ApiViewInterface
 {
+    public function __construct()
+    {
+    }
 }

@@ -3,7 +3,9 @@
 namespace Artica\Controller;
 
 use Artica\ApiView\CrudApiView;
+use Artica\DataProvider\EntityDataProvider;
 use Artica\Entity\Entity;
+use Artica\Entity\EntityInterface;
 use Artica\Exception\Entity\EntityNotFoundException;
 use Artica\Exception\Entity\EntityValidationException;
 use Artica\Exception\Model\ValidationException;
@@ -66,7 +68,12 @@ abstract class CrudController extends RestController
      */
     public function actionIndex()
     {
-        throw new ServerErrorHttpException('Not Implemented yet!');
+        /** @var EntityInterface $entityClass */
+        $entityClass = $this->getCrudForm()->getEntityClass();
+        return new EntityDataProvider([
+            'query' => $entityClass::find(),
+            'viewClass' => $this->getApiViewClass()
+        ]);
     }
 
     /**

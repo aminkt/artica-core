@@ -12,8 +12,10 @@ use Artica\Exception\View\ViewNotFoundException;
  *
  * @package Artica\ApiView
  */
-abstract class CrudApiView extends ControllerApiView
+abstract class CrudApiView extends ControllerApiView implements EntityApiViewInterface
 {
+    use EntityApiViewTrait;
+
     const SCENARIOS = [
         'index',
         'create',
@@ -21,9 +23,6 @@ abstract class CrudApiView extends ControllerApiView
         'delete',
         'view'
     ];
-
-    /** @var Entity Related crud */
-    protected $entity;
 
     /**
      * CrudApiView constructor.
@@ -38,16 +37,6 @@ abstract class CrudApiView extends ControllerApiView
             $actionId = $this->controller . '/' . $this->action;
             throw new ViewNotFoundException('View ' . get_called_class() . ' can not handle action ' . $actionId);
         }
-    }
-
-    /**
-     * Return entity class object.
-     *
-     * @return Entity|null
-     */
-    public function getEntity()
-    {
-        return $this->entity;
     }
 
     /**
