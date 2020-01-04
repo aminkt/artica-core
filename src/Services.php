@@ -9,6 +9,7 @@ use yii\base\Security;
 use yii\caching\CacheInterface;
 use yii\mail\MailerInterface;
 use yii\queue\amqp_interop\Queue;
+use yii\queue\redis\Queue as RedisQueue;
 use yii\redis\Cache;
 
 /**
@@ -47,6 +48,14 @@ trait Services
     public static function serviceRabbitMQ(): Queue
     {
         return Yii::$app->get('amqQueue');
+    }
+
+    /**
+     * @return RedisQueue
+     */
+    public static function serviceQueue(): RedisQueue
+    {
+        return Yii::$app->get('queue');
     }
 
     /**

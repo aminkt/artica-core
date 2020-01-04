@@ -18,6 +18,11 @@ class DateTime extends BaseDateTime
 {
     const FORMAT_STANDARD = 'Y-m-d H:i:s';
     const PHP_FORMAT_STANDARD = 'php:'.self::FORMAT_STANDARD;
+    const MINUTE = 60 ;
+    const HOUR = 3600;
+    const DAY = self::HOUR * 24;
+    const MONTH = self::DAY * 30;
+    const YEAR = self::DAY * 365;
 
     public function __construct($time = 'now', DateTimeZone $timezone = null)
     {
