@@ -55,7 +55,7 @@ trait Services
      */
     public static function serviceQueue(): RedisQueue
     {
-        return Yii::$app->get('queue');
+        return Yii::$app->get('redisQueue');
     }
 
     /**

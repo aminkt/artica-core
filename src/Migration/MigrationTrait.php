@@ -66,6 +66,11 @@ trait MigrationTrait
         return parent::string($length);
     }
 
+    public function price()
+    {
+        return $this->integer(10);
+    }
+
     /**
      * Generate index name to use when you want create a new index.
      *
