@@ -18,7 +18,7 @@ use yii\base\Model;
 abstract class BaseModel extends Model
 {
     /** @var bool $throwExceptionOnValidationError Throw validation exception if there is validation error. */
-    public $throwExceptionOnValidationError = true;
+    protected $throwExceptionOnValidationError = true;
 
     /**
      * Throw validation exception if there is validation error.
@@ -38,7 +38,7 @@ abstract class BaseModel extends Model
     public function afterValidate()
     {
         parent::afterValidate();
-        if ($this->throwExceptionOnValidationError) {
+        if ($this->hasErrors() && $this->throwExceptionOnValidationError) {
             throw new ValidationException($this);
         }
     }
