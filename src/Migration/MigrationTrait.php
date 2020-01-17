@@ -88,8 +88,12 @@ trait MigrationTrait
         $tableSection = Inflector::camelize($tableSection);
 
         $fieldSection = '';
+        $lastFiled = end($columns);
         foreach ($columns as $field) {
-            $fieldSection .= Inflector::camelize($field) . '_';
+            $fieldSection .= Inflector::camelize($field);
+            if ($lastFiled != $field) {
+                $fieldSection .= '_';
+            }
         }
 
         if ($isPrimaryKey) {
