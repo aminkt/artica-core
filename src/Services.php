@@ -3,10 +3,13 @@ declare(strict_types=1);
 
 namespace Artica;
 
+use Artica\Lib\DateTime\DateTime;
 use Artica\Lib\SMS\SMSInterface;
+use DateTimeZone;
 use Yii;
 use yii\base\Security;
 use yii\caching\CacheInterface;
+use yii\i18n\Formatter;
 use yii\mail\MailerInterface;
 use yii\queue\amqp_interop\Queue;
 use yii\queue\redis\Queue as RedisQueue;
@@ -72,5 +75,27 @@ trait Services
     public static function serviceSMS(): SMSInterface
     {
         return Yii::$app->get('sms');
+    }
+
+    /**
+     * @return Formatter
+     */
+    public static function serviceFormatter(): Formatter
+    {
+        return Yii::$app->getFormatter();
+    }
+
+    /**
+     * @param string            $time
+     * @param DateTimeZone|null $timezone
+     *
+     * @return DateTime
+     */
+    public static function serviceDateTime($time = 'now', DateTimeZone $timezone = null): DateTime
+    {
+        if ($timezone === null) {
+            $timezone = new DateTimeZone('Asia/Tehran');
+        }
+        return new DateTime($time, $timezone);
     }
 }
