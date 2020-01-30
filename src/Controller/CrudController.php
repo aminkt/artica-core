@@ -139,12 +139,10 @@ abstract class CrudController extends RestController
         $form = $this->getCrudForm();
         $form->setScenario($form::SCENARIO_DELETE);
 
-        if (!$form->load(Yii::$app->getRequest()->post())) {
-            throw new BadRequestHttpException('Can\'t load form.');
-        }
+        $form->load(Yii::$app->getRequest()->post());
 
         try {
-            $form->create();
+            $form->delete($id);
             $apiViewClass = $this->getApiViewClass();
             return new $apiViewClass();
         } catch (ValidationException $e) {

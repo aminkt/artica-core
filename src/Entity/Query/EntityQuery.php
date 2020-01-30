@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace Artica\Entity\Query;
 
 use Artica\Entity\Entity;
-use Artica\Entity\EntityCacheIndex;
-use Artica\Exception\EntityException;
+use Artica\Exception\Entity\EntityException;
 use Artica\Services;
 use yii\db\ActiveQuery;
 use yii\db\Query;
@@ -17,8 +16,6 @@ use yii\db\Query;
  */
 class EntityQuery extends ActiveQuery
 {
-    use Services;
-
     /**
      * Return not deleted rows.
      *
@@ -95,6 +92,7 @@ class EntityQuery extends ActiveQuery
      */
     private function getIdsFromCache(string $indexCode, array $dynamicValues): array
     {
+        throw new EntityException('Not implemented yet!');
         $getIdsCallable = function () use ($indexCode, $dynamicValues) : string {
             /** @var Entity $entityClass */
             $entityClass = $this->modelClass;
@@ -120,7 +118,7 @@ class EntityQuery extends ActiveQuery
             return  implode(array_column($res, 'id'), ',');
         };
 
-        $ids = $this->serviceRedisCache()->getOrSet(
+        $ids = Services::serviceRedisCache()->getOrSet(
             $indexCode,
             $getIdsCallable
         );
