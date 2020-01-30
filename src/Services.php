@@ -16,10 +16,10 @@ use yii\queue\redis\Queue as RedisQueue;
 use yii\redis\Cache;
 
 /**
- * Trait Services
+ * Class Services
  * Base Artica services.
  */
-trait Services
+abstract class Services
 {
     /**
      * @return Security
