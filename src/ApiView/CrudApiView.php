@@ -29,7 +29,7 @@ abstract class CrudApiView extends ControllerApiView implements EntityApiViewInt
      * @param Entity|null $entity
      * @throws ViewNotFoundException When crud used for unsupported methpd.
      */
-    public function __construct(?Entity $entity)
+    public function __construct(?Entity $entity = null)
     {
         parent::__construct();
         $this->entity = $entity;

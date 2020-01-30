@@ -119,7 +119,7 @@ abstract class CrudController extends RestController
         }
 
         try {
-            $entity = $form->u();
+            $entity = $form->update($id);
         } catch (ValidationException $e) {
             return $form;
         }
