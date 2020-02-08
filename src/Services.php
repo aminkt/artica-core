@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Artica;
 
+use Artica\ErrorHandler\ErrorLogger;
 use Artica\Lib\DateTime\DateTime;
 use Artica\Lib\SMS\SMSInterface;
 use DateTimeZone;
@@ -97,5 +98,14 @@ abstract class Services
             $timezone = new DateTimeZone('Asia/Tehran');
         }
         return new DateTime($time, $timezone);
+    }
+
+    /**
+     * @return ErrorLogger
+     */
+    public static function serviceErrorLogger(): ErrorLogger
+    {
+        $logger = new ErrorLogger();
+        return $logger;
     }
 }
