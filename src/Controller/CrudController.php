@@ -95,7 +95,7 @@ abstract class CrudController extends RestController
         try {
             $entity = $form->create();
         } catch (ValidationException $e) {
-            return $form;
+            return $e->getErrors();
         }
 
         $apiViewClass = $this->getApiViewClass();

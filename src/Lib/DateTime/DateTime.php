@@ -36,4 +36,9 @@ class DateTime extends BaseDateTime
 
         parent::__construct($time, $timezone);
     }
+
+    public function getNow()
+    {
+        return new self();
+    }
 }
